@@ -329,14 +329,6 @@ if __name__ == "__main__":
 
     user_question = st.text_input("Realiza preguntas acerca de tus documentos.")
 
-    if st.button('Pregunta'):
-    # if user_question:
-
-      st.session_state.response = get_conversation_chain(str(user_question),api_key,st.session_state.coleccion)
-      # st.session_state.response = get_conversation_chain(str(user_question),api_key,st.session_state.coleccion,instrucciones = st.session_state.prompt_chatbot)
-
-      handle_user_input(user_question)
-
     with st.sidebar:
 
       st.subheader("Tus documentos pdf.")
@@ -358,12 +350,8 @@ if __name__ == "__main__":
         for uploaded_file in pdf_docs:
           file_name = uploaded_file.name
 
-      # st.session_state.prompt_chatbot = st.text_input("Ingresa las indicaciones para las respuestas del bot.")
-
       if st.button("Procesar"):
         if pdf_docs != []:
-          # if st.session_state.prompt_chatbot == "":
-          #   st.session_state.prompt_chatbot = "Eres el mejor analista de texto."
 
           with st.spinner("Procesando"):
 
@@ -389,7 +377,12 @@ if __name__ == "__main__":
             )
             del pdf_docs
 
-        # elif st.session_state.coleccion != "":
-        # 
-        #   if st.session_state.prompt_chatbot == "":
-        #     st.session_state.prompt_chatbot = "Eres el mejor analista de texto."
+    if st.button('Pregunta'):
+      # if user_question: z 
+
+      st.session_state.response = get_conversation_chain(str(user_question),api_key,st.session_state.coleccion)
+      # st.session_state.response = get_conversation_chain(str(user_question),api_key,st.session_state.coleccion,instrucciones = st.session_state.prompt_chatbot)
+
+      handle_user_input(user_question)
+
+
