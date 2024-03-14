@@ -329,7 +329,8 @@ if __name__ == "__main__":
 
     user_question = st.text_input("Realiza preguntas acerca de tus documentos.")
 
-    if user_question:
+    if st.button('Pregunta'):
+    # if user_question:
 
       st.session_state.response = get_conversation_chain(str(user_question),api_key,st.session_state.coleccion)
       # st.session_state.response = get_conversation_chain(str(user_question),api_key,st.session_state.coleccion,instrucciones = st.session_state.prompt_chatbot)
