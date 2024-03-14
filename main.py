@@ -6,7 +6,6 @@ import json
 import openai
 import os
 import streamlit as st
-from jsonbin_funs_v3 import load_json
 # from jsonbin_funs_v3 import get_remain_obs, add_registro, load_json, descontar_obs, ultimas_preguntas
 # from decorador_costos import decorador_costo
 from streamlit_chat import message
@@ -29,6 +28,25 @@ api_key = st.secrets["OPENAI_API_KEY"]
 X_Master_Key = st.secrets["X_MASTER_KEY"]
 bin_id_usuarios = st.secrets["BIN_ID_USUARIOS"]
 os.environ["OPENAI_API_KEY"] = api_key
+
+def load_json(bin_id,X_Master_Key=X_Master_Key):
+
+  url = f'https://api.jsonbin.io/v3/b/{bin_id}'
+
+  headers = {
+    'X-Master-Key': X_Master_Key
+  }
+
+  req = requests.get(url, json=None, headers=headers).content
+
+  data_str = req.decode('utf-8')
+  try:
+    data_dict = json.loads(data_str)
+    record_dict = data_dict["record"]
+  except:
+    record_dict = ast.literal_eval(data_str)
+
+  return record_dict
 
 info_usuarios = load_json(bin_id_usuarios,X_Master_Key)
 
