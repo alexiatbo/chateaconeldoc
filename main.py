@@ -5,6 +5,7 @@ import hmac
 import json
 import openai
 import os
+import requests
 import streamlit as st
 # from jsonbin_funs_v3 import get_remain_obs, add_registro, load_json, descontar_obs, ultimas_preguntas
 # from decorador_costos import decorador_costo
