@@ -193,8 +193,14 @@ def load_vectorstore(qdrant_api_key,qdrant_host,qdrant_collection_name,openai_ap
 
   return vectorstore
 
-def get_conversation_chain(user_question,openai_api_key,coleccion,instrucciones = "Eres un experto en analizar preguntas acerca del texto compartido y obtener conclusiones acertadas."):
+def get_conversation_chain(user_question,openai_api_key,coleccion):
 
+  instrucciones = '''Eres un experto en analizar preguntas acerca del texto 
+  compartido y obtener conclusiones acertadas. Eres el asistente personal 
+  de un estudiante de medicina, responde de la mejor manera asumiendo tu rol.
+  No inventes nada que no sepas.
+  '''
+  
   general_system_template = "Dado el context"+instrucciones+r"""
   ----
   {context}
@@ -318,14 +324,15 @@ if __name__ == "__main__":
     if "password" not in st.session_state:
       st.session_state.password = ""
 
-    if "prompt_chatbot" not in st.session_state:
-      st.session_state.prompt_chatbot = ""
+    # if "prompt_chatbot" not in st.session_state:
+    #   st.session_state.prompt_chatbot = ""
 
     user_question = st.text_input("Realiza preguntas acerca de tus documentos.")
 
     if user_question:
 
-      st.session_state.response = get_conversation_chain(str(user_question),api_key,st.session_state.coleccion,instrucciones = st.session_state.prompt_chatbot)
+      st.session_state.response = get_conversation_chain(str(user_question),api_key,st.session_state.coleccion)
+      # st.session_state.response = get_conversation_chain(str(user_question),api_key,st.session_state.coleccion,instrucciones = st.session_state.prompt_chatbot)
 
       handle_user_input(user_question)
 
@@ -350,12 +357,12 @@ if __name__ == "__main__":
         for uploaded_file in pdf_docs:
           file_name = uploaded_file.name
 
-      st.session_state.prompt_chatbot = st.text_input("Ingresa las indicaciones para las respuestas del bot.")
+      # st.session_state.prompt_chatbot = st.text_input("Ingresa las indicaciones para las respuestas del bot.")
 
       if st.button("Procesar"):
         if pdf_docs != []:
-          if st.session_state.prompt_chatbot == "":
-            st.session_state.prompt_chatbot = "Eres el mejor analista de texto."
+          # if st.session_state.prompt_chatbot == "":
+          #   st.session_state.prompt_chatbot = "Eres el mejor analista de texto."
 
           with st.spinner("Procesando"):
 
@@ -381,7 +388,7 @@ if __name__ == "__main__":
             )
             del pdf_docs
 
-        elif st.session_state.coleccion != "":
-
-          if st.session_state.prompt_chatbot == "":
-            st.session_state.prompt_chatbot = "Eres el mejor analista de texto."
+        # elif st.session_state.coleccion != "":
+        # 
+        #   if st.session_state.prompt_chatbot == "":
+        #     st.session_state.prompt_chatbot = "Eres el mejor analista de texto."
