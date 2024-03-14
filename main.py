@@ -279,88 +279,88 @@ if __name__ == "__main__":
     if "preguntas_recomendadas" not in st.session_state:
         st.session_state.preguntas_recomendadas = ""
 
-      if "conversation" not in st.session_state:
-        st.session_state.conversation = []
+    if "conversation" not in st.session_state:
+      st.session_state.conversation = []
 
-      if "response" not in st.session_state:
-        st.session_state.response = ""
+    if "response" not in st.session_state:
+      st.session_state.response = ""
 
-      if "coleccion" not in st.session_state:
-        st.session_state.coleccion = ""
+    if "coleccion" not in st.session_state:
+      st.session_state.coleccion = ""
 
-      if "chat_history" not in st.session_state:
-        st.session_state.chat_history = ""
+    if "chat_history" not in st.session_state:
+      st.session_state.chat_history = ""
 
-      if "user" not in st.session_state:
-        st.session_state.user = ""
+    if "user" not in st.session_state:
+      st.session_state.user = ""
 
-      if "password" not in st.session_state:
-        st.session_state.password = ""
+    if "password" not in st.session_state:
+      st.session_state.password = ""
 
-      if "prompt_chatbot" not in st.session_state:
-        st.session_state.prompt_chatbot = ""
+    if "prompt_chatbot" not in st.session_state:
+      st.session_state.prompt_chatbot = ""
 
-      user_question = st.text_input("Realiza preguntas acerca de tus documentos.")
+    user_question = st.text_input("Realiza preguntas acerca de tus documentos.")
 
-      if user_question:
+    if user_question:
 
-        st.session_state.response = get_conversation_chain(str(user_question),api_key,st.session_state.coleccion,instrucciones = st.session_state.prompt_chatbot)
+      st.session_state.response = get_conversation_chain(str(user_question),api_key,st.session_state.coleccion,instrucciones = st.session_state.prompt_chatbot)
 
-        handle_user_input(user_question)
+      handle_user_input(user_question)
 
-      with st.sidebar:
+    with st.sidebar:
 
-        st.subheader("Tus documentos pdf.")
-        pdf_docs = st.file_uploader(
-          "Ingresa tus documentos pdf y da click en 'Procesar'",
-          accept_multiple_files = True
+      st.subheader("Tus documentos pdf.")
+      pdf_docs = st.file_uploader(
+        "Ingresa tus documentos pdf y da click en 'Procesar'",
+        accept_multiple_files = True
+      )
+
+      st.subheader("También puedes elegir un documento existente")
+      st.session_state.coleccion = st.selectbox(
+        "También puedes elegir un documento existente",
+        obtener_colecciones(
+          qdrant_api_key = qdrant_api_key,
+          qdrant_host = qdrant_host, 
         )
+      )
 
-        st.subheader("También puedes elegir un documento existente")
-        st.session_state.coleccion = st.selectbox(
-          "También puedes elegir un documento existente",
-          obtener_colecciones(
-            qdrant_api_key = qdrant_api_key,
-            qdrant_host = qdrant_host, 
-          )
-        )
+      if pdf_docs is not None:
+        for uploaded_file in pdf_docs:
+          file_name = uploaded_file.name
 
-        if pdf_docs is not None:
-          for uploaded_file in pdf_docs:
-            file_name = uploaded_file.name
+      st.session_state.prompt_chatbot = st.text_input("Ingresa las indicaciones para las respuestas del bot.")
 
-        st.session_state.prompt_chatbot = st.text_input("Ingresa las indicaciones para las respuestas del bot.")
+      if st.button("Procesar"):
+        if pdf_docs != []:
+          if st.session_state.prompt_chatbot == "":
+            st.session_state.prompt_chatbot = "Eres el mejor analista de texto."
 
-        if st.button("Procesar"):
-          if pdf_docs != []:
-            if st.session_state.prompt_chatbot == "":
-              st.session_state.prompt_chatbot = "Eres el mejor analista de texto."
+          with st.spinner("Procesando"):
 
-            with st.spinner("Procesando"):
+            raw_text = get_pdf_text(pdf_docs)
 
-              raw_text = get_pdf_text(pdf_docs)
+            text_chunks = get_text_chunks(raw_text)
 
-              text_chunks = get_text_chunks(raw_text)
+            st.session_state.coleccion = f"coleccion_{file_name}"
 
-              st.session_state.coleccion = f"coleccion_{file_name}"
+            create_vectorstore(
+              text_chunks=text_chunks,
+              coleccion = st.session_state.coleccion,
+              qdrant_api_key=qdrant_api_key,
+              qdrant_host=qdrant_host,
+              openai_api_key = api_key
+            )
 
-              create_vectorstore(
-                text_chunks=text_chunks,
-                coleccion = st.session_state.coleccion,
-                qdrant_api_key=qdrant_api_key,
-                qdrant_host=qdrant_host,
-                openai_api_key = api_key
-              )
+            vectorstore = load_vectorstore(
+              qdrant_api_key = qdrant_api_key,
+              qdrant_host = qdrant_host,
+              qdrant_collection_name = st.session_state.coleccion,
+              openai_api_key = api_key
+            )
+            del pdf_docs
 
-              vectorstore = load_vectorstore(
-                qdrant_api_key = qdrant_api_key,
-                qdrant_host = qdrant_host,
-                qdrant_collection_name = st.session_state.coleccion,
-                openai_api_key = api_key
-              )
-              del pdf_docs
+        elif st.session_state.coleccion != "":
 
-          elif st.session_state.coleccion != "":
-
-            if st.session_state.prompt_chatbot == "":
-              st.session_state.prompt_chatbot = "Eres el mejor analista de texto."
+          if st.session_state.prompt_chatbot == "":
+            st.session_state.prompt_chatbot = "Eres el mejor analista de texto."
