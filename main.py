@@ -28,6 +28,8 @@ from qdrant_client.http import models
 api_key = st.secrets["OPENAI_API_KEY"]
 X_Master_Key = st.secrets["X_MASTER_KEY"]
 bin_id_usuarios = st.secrets["BIN_ID_USUARIOS"]
+qdrant_host = st.secrets["QDRANT_HOST"]
+qdrant_api_key = st.secrets["QDRANT_API_KEY"]
 os.environ["OPENAI_API_KEY"] = api_key
 
 def load_json(bin_id,X_Master_Key=X_Master_Key):
