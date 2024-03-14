@@ -242,61 +242,6 @@ def get_conversation_chain(user_question,openai_api_key,coleccion):
 
   return response["answer"]
 
-def main():
-
-  # st.set_page_config(page_title = "Conversa conmigo.")
-  if authenticate_user_hoy():
-    st.header("Conversa conmigo y pregúntame lo que quieras!")
-    st.image("robot_profesional.png", width=400)
-    z = get_remain_obs(usuario=st.session_state.usuario)
-    st.markdown(f"***Cuentas con {z} consultas.***")
-    st.session_state.ultimas_preguntas = ultimas_preguntas(
-      usuario=st.session_state.usuario,
-    )
-
-    if "password_correct" not in st.session_state:
-      st.session_state.password_correct = ""
-
-    if "usuario" not in st.session_state:
-      st.session_state.usuario = ""
-
-    if 'clicked' not in st.session_state:
-      st.session_state.clicked = False
-
-    if "psswd" not in st.session_state:
-      st.session_state.psswd = ""
-
-    if "password" not in st.session_state:
-      st.session_state.password = ""
-
-    if "ultimas_preguntas" not in st.session_state:
-      st.session_state.ultimas_preguntas = ""
-
-    if "conversation" not in st.session_state:
-      st.session_state.conversation = []
-
-    if "response" not in st.session_state:
-      st.session_state.response = ""
-
-    user_question = st.text_input("Realiza tu pregunta.")
-
-    with st.sidebar:
-      st.subheader("Tus últimas preguntas")
-      st.write(st.session_state.ultimas_preguntas)
-    if st.button('Pregunta'):
-      if user_question and z>0:
-        with st.spinner("Procesando"):
-        
-          st.session_state.response = get_completion(
-            user_question=str(user_question),
-            model = "gpt-3.5-turbo-instruct",
-            usuario = st.session_state.usuario
-          )
-          handle_user_input(user_question)
-          descontar_obs(usuario=st.session_state.usuario)
-      elif z==0:
-        st.write("Lo siento, no cuentas con consultas suficientes.")
-
 if __name__ == "__main__":
 
   # main()
