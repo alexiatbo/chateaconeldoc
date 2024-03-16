@@ -138,6 +138,7 @@ def obtener_colecciones(qdrant_api_key,qdrant_host):
   for item in colecciones:
     nombres_colecciones = [coleccion.name for coleccion in item[1]]
 
+  output = [i for i in nombres_colecciones if '_medicina' in i]
   return nombres_colecciones  
 
 def create_vectorstore(text_chunks, coleccion, qdrant_api_key, qdrant_host,openai_api_key):
@@ -198,7 +199,9 @@ def get_conversation_chain(user_question,openai_api_key,coleccion):
   instrucciones = '''Eres un experto en analizar preguntas acerca del texto 
   compartido y obtener conclusiones acertadas. Eres el asistente personal 
   de un estudiante de medicina, responde de la mejor manera asumiendo tu rol.
-  No inventes nada que no sepas.
+  No inventes nada que no sepas. 
+  SOLO PUEDES RESPONDER LAS PREGUNTAS DEL USUARIO, BASANDOTE EN EL TEXTO
+  QUE SE TE COMPARTA DE LOS LIBROS. DE OTRA FORMA SERÁS CASTIGADO.
   '''
   
   general_system_template = "Dado el context"+instrucciones+r"""
@@ -304,7 +307,7 @@ if __name__ == "__main__":
 
             text_chunks = get_text_chunks(raw_text)
 
-            st.session_state.coleccion = f"coleccion_{file_name}"
+            st.session_state.coleccion = f"coleccion_{file_name}_medicina"
 
             create_vectorstore(
               text_chunks=text_chunks,
