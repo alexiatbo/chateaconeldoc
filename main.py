@@ -139,7 +139,7 @@ def obtener_colecciones(qdrant_api_key,qdrant_host):
     nombres_colecciones = [coleccion.name for coleccion in item[1]]
 
   output = [i for i in nombres_colecciones if '_medicina' in i]
-  return nombres_colecciones  
+  return output
 
 def create_vectorstore(text_chunks, coleccion, qdrant_api_key, qdrant_host,openai_api_key):
 
